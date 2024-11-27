@@ -5,7 +5,7 @@ export function useExcel() {
   //const excelData = useState('excelData', () => [])
   const excelDataA = useState('excelDataA', () => [])  // 用於儲存 A.xlsx 的資料
   const excelDataB = useState('excelDataB', () => [])  // 用於儲存 B.xlsx 的資料
-
+ 
   const loadExcelFile = (file, fileType) => {
     return new Promise(async (resolve, reject) => {
       try {
