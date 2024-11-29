@@ -101,8 +101,10 @@ function drawCharts() {
           datasets: [{
             label: `問卷第 ${index + 1} 題`,
             data: data,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
+            //backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            //borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(255, 181, 181, 0.6)',  // 使用深藍色背景
+            borderColor: 'rgba(255, 0, 0, 1)',  // 使用深藍色邊框
             borderWidth: 1
           }]
         },
@@ -114,7 +116,18 @@ function drawCharts() {
               ticks: { stepSize: 1 }
             }
           }
-        }
+        },
+        plugins: {
+          datalabels: {
+            display: true,
+            color: 'black',
+            font: { weight: 'bold', size: 14 },
+            formatter: (value) => value + ' 人',
+            anchor: 'end',
+            align: 'top',
+          }
+        },
+        plugins: [ChartDataLabels]
       })
       chartInstances.push(chartInstance)
     })

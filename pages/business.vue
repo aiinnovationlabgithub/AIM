@@ -1,5 +1,6 @@
 <!-- pages/chart.vue -->
 <template>
+  <br>
   <div class="container">
     <div class="row">
       <!-- 前 6 等份：第一個下拉式選單（業務代號） -->
@@ -44,7 +45,7 @@
           <h4 class="m-0" v-if="totalRevenue !== null">
             總營業額 : 
             <span v-if="totalRevenue === '無資料'">{{ totalRevenue }}</span>
-            <span v-else>{{ totalRevenue }} 元</span>
+            <span v-else>{{ formatRevenue(totalRevenue) }} 元</span>
           </h4>
         </div>
       </div>
@@ -134,6 +135,19 @@ function calculateTotalRevenue() {
     totalRevenue.value = '無資料'
   }
 }
+
+//總營業額的分隔符號
+const formatRevenue = (revenue) => {
+  if (revenue === '無資料') {
+    return revenue;
+  }
+  
+  // 確保 totalRevenue 是數字型態
+  const revenueNumber = parseFloat(revenue);
+  
+  // 使用 toLocaleString 格式化數字，每4位加逗號
+  return revenueNumber.toLocaleString();
+};
 </script>
 
 <style scoped>

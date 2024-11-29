@@ -12,6 +12,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
+  background-color: #C4E1FF; /* 淡灰色背景 */
 }
 </style>
 
