@@ -119,7 +119,13 @@ const showLoginDialog = async () => {
           //text: '正在跳轉到商業頁面...',
         }).then(() => {
           const currentPage = window.location.pathname
-          window.location.href = currentPage // 跳轉頁面
+          if(currentPage === '/'){
+            window.location.href = '/business' // 跳轉頁面
+          }
+          else{
+            alert(currentPage)
+            window.location.href = currentPage // 跳轉頁面
+          }
           Swal.close()
         })
       } else {

@@ -1,4 +1,5 @@
 <template>
+  <br>
   <div v-if="isLoggedIn" class="container">
     <div class="d-flex justify-content-between align-items-center">
       <h2>原始資料</h2>
@@ -114,7 +115,7 @@ onMounted(() => {
       isLoggedIn.value = cookie[2] === 'true'
     }
   }
-  
+
   if (Array.isArray(excelDataA.value) && excelDataA.value.length > 0) {
     filteredExcelData.value = removeColumns(excelDataA.value)
     initializeDataTable()
