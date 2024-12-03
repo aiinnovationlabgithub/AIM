@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isLoggedIn">
     <div v-if="Array.isArray(excelDataA) && excelDataA.length">
     <!--<div v-if="excelData.length">-->
       <!-- 使用 v-for 渲染 10 個 canvas，並置中 -->
@@ -40,6 +40,9 @@ const { excelDataA } = useExcel()
 const chartRefs = Array.from({ length: 10 }, () => ref(null))  // 建立10個 canvas 參考
 const chartInstances = []  // 用於儲存所有的圖表實例
 const statistics = ref(Array(10).fill({ median: 0, mean: 0 }))
+
+// 檢查 cookie 來判斷是否登入，僅在客戶端執行
+const isLoggedIn = ref(false)
 
 // 計算每題的選項次數
 function calculateAnswerCounts(questionIndex) {
@@ -143,8 +146,16 @@ watch(excelDataA, (newData) => {
 
 // 初始化圖表
 onMounted(() => {
+  if (process.client) {
+    const cookie = document.cookie.match(new RegExp('(^| )' + 'isLoggedIn' + '=([^;]+)'))
+    if (cookie) {
+      isLoggedIn.value = cookie[2] === 'true'
+    }
+  }
+
   if (excelDataA.value.length) {
     drawCharts()
   }
 })
+
 </script>

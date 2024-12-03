@@ -1,7 +1,7 @@
 <!-- pages/chart.vue -->
 <template>
   <br>
-  <div class="container">
+  <div v-if="isLoggedIn" class="container">
     <div class="row">
       <!-- 前 6 等份：第一個下拉式選單（業務代號） -->
       <div class="col-6">
@@ -72,6 +72,18 @@ const { loadExcelFile, excelDataA, excelDataB } = useExcel()
 const selectedBusinessCode = ref(null) // 儲存選中的業務代號
 const selectedCompany = ref(null) // 儲存選中的公司名稱
 const totalRevenue = ref(null) // 儲存選擇公司對應的總營業額
+
+// 檢查 cookie 來判斷是否登入，僅在客戶端執行
+const isLoggedIn = ref(false)
+
+onMounted(() => {
+  if (process.client) {
+    const cookie = document.cookie.match(new RegExp('(^| )' + 'isLoggedIn' + '=([^;]+)'))
+    if (cookie) {
+      isLoggedIn.value = cookie[2] === 'true'
+    }
+  }
+})
 
 // 獲取唯一業務代號列表
 const uniqueBusinessCodes = computed(() => {

@@ -1,8 +1,6 @@
-<!-- components/NavigationBar.vue -->
 <template>
   <nav class="navbar navbar-expand-lg navbar-light custom-bg">
     <div class="container-fluid">
-      <!--<NuxtLink class="navbar-brand" to="/business">AIM滿意度報表</NuxtLink>-->
       <span style="font-weight: bold; font-size: 24px; color: white;">AIM滿意度報表</span>
       <button
         class="navbar-toggler"
@@ -17,9 +15,6 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <!--<li class="nav-item">
-            <NuxtLink class="nav-link" to="/">首頁</NuxtLink>
-          </li>-->
           <li class="nav-item">
             <NuxtLink class="nav-link" to="/business" style="color: white;">滿意度</NuxtLink>
           </li>
@@ -30,83 +25,113 @@
             <NuxtLink class="nav-link" to="/data" style="color: white;">原始資料</NuxtLink>
           </li>
         </ul>
-        <!-- 上傳檔案按鈕 -->
-        <!--<input
-          type="file"
-          class="form-control-file"
-          @change="handleFileUpload"
-          style="display: none;"
-          ref="fileInput"
-        />
-        <button class="btn btn-primary" @click="triggerFileUpload">上傳 Excel</button>-->
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { useExcel } from '~/composables/useExcel'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { autoLoadExcel } from '~/composables/autoExcel'
-//import Swal from 'sweetalert2'  // 引入 SweetAlert2 套件
 
-const { loadExcelFile, excelDataA, excelDataB } = useExcel()
-const fileInput = ref(null)
+// 自動加載 Excel 檔案的組件
+import { useExcel } from '~/composables/useExcel'
+const { loadExcelFile } = useExcel()
 
-/* 
-//button上傳
-function triggerFileUpload() {
-  fileInput.value.click()
+// 讀取 cookie 的函數
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
+  return match ? match[2] : null
 }
 
-function handleFileUpload(event) {
-  const file = event.target.files[0]
-  if (file) {
-    loadExcelFile(file)
-      .then(() => {
-        console.log('Excel data loaded successfully')
-      })
-      .catch((error) => {
-        console.error('Failed to load Excel file:', error)
-      })
-  }
+// 設置 cookie 的函數
+function setCookie(name, value, days) {
+  const date = new Date()
+  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)) // 設置有效期為 days 天
+  const expires = "expires=" + date.toUTCString()
+  document.cookie = name + "=" + value + ";" + expires + ";path=/"
 }
-*/
 
-// 當組件掛載時自動加載 Excel 檔案
+// 當組件掛載時執行
 onMounted(async () => {
+  // 先檢查是否已經登入過（透過讀取 cookie）
+  const isLoggedIn = getCookie('isLoggedIn')
+
+  if (!isLoggedIn) {
+    // 若未登入，顯示 SweetAlert2 登入對話框
+    await showLoginDialog()
+  }
+
   // 顯示 SweetAlert2 的 loading 提示框
   Swal.fire({
     title: '資料加載中...',
-    html: '正在載入資料，請稍候...',  // 可以設置更具體的提示語
+    html: '正在載入資料，請稍候...',
     allowOutsideClick: false,  // 不允許外部點擊關閉
     didOpen: () => {
       Swal.showLoading()  // 顯示轉圈
     },
-    willClose: () => {
-      // 關閉 loading 提示框
-    }
   })
 
   try {
     // 自動加載指定的 Excel 檔案
     await autoLoadExcel('/answer2024_1~3.xlsx', loadExcelFile, 'A')
     console.log('ExcelA file loaded successfully')
-    //console.log(excelDataA.value)
     // 自動加載 B 檔案
-    const dataB = await autoLoadExcel('/2024_1~3.xlsx', loadExcelFile, 'B')  // B 檔案
+    await autoLoadExcel('/2024_1~3.xlsx', loadExcelFile, 'B')  // B 檔案
     console.log('ExcelB file loaded successfully')
-    //console.log(excelDataB.value[1])
     Swal.close()
   } catch (error) {
     console.error('Failed to load Excel file:', error)
     Swal.close()
   }
 })
+
+// 顯示登入對話框的邏輯
+const showLoginDialog = async () => {
+  const result = await Swal.fire({
+    title: '登入',
+    html: `
+      <form id="loginForm">
+        <input type="text" id="username" class="swal2-input" placeholder="帳號" required>
+        <input type="password" id="password" class="swal2-input" placeholder="密碼" required>
+      </form>
+    `,
+    focusConfirm: false,
+    confirmButtonText: '登入',
+    showCancelButton: false,
+    allowOutsideClick: false,
+    preConfirm: async () => {
+      const username = Swal.getPopup().querySelector('#username').value
+      const password = Swal.getPopup().querySelector('#password').value
+
+      if (!username || !password) {
+        Swal.showValidationMessage('請輸入帳號和密碼')
+        return false
+      }
+
+      // 假設登入成功
+      if (username === 'AIM2024' && password === 'AIM2024') {
+        // 登入成功，設定登入狀態到 Cookie，並設置有效期為 1 天
+        setCookie('isLoggedIn', 'true', 1)
+        Swal.fire({
+          icon: 'success',
+          title: '登入成功',
+          //text: '正在跳轉到商業頁面...',
+        }).then(() => {
+          const currentPage = window.location.pathname
+          window.location.href = currentPage // 跳轉頁面
+          Swal.close()
+        })
+      } else {
+        Swal.showValidationMessage('帳號或密碼錯誤')
+        return false
+      }
+    }
+  })
+}
 </script>
 
 <style scoped>
-/* 你可以在這裡加入自訂樣式 */
 .custom-bg {
   background-color: #1D4E89;
 }

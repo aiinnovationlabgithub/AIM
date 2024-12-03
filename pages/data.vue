@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div v-if="isLoggedIn" class="container">
     <div class="d-flex justify-content-between align-items-center">
       <h2>原始資料</h2>
       <button class="btn btn-primary" @click="downloadExcel">下載原始資料xlsx</button>
@@ -35,8 +35,9 @@ import { useExcel } from '~/composables/useExcel'
 import * as XLSX from 'xlsx'
 
 const { excelDataA } = useExcel()
-
 const filteredExcelData = ref([])
+// 檢查 cookie 來判斷是否登入，僅在客戶端執行
+const isLoggedIn = ref(false)
 
 watch(excelDataA, (newData) => {
   if (Array.isArray(newData) && newData.length > 0) {
@@ -107,6 +108,13 @@ function convertToJSON(excelDataA) {
 }
 
 onMounted(() => {
+  if (process.client) {
+    const cookie = document.cookie.match(new RegExp('(^| )' + 'isLoggedIn' + '=([^;]+)'))
+    if (cookie) {
+      isLoggedIn.value = cookie[2] === 'true'
+    }
+  }
+  
   if (Array.isArray(excelDataA.value) && excelDataA.value.length > 0) {
     filteredExcelData.value = removeColumns(excelDataA.value)
     initializeDataTable()
