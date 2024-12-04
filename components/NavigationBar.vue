@@ -59,7 +59,7 @@ onMounted(async () => {
 
   if (!isLoggedIn) {
     // 若未登入，顯示 SweetAlert2 登入對話框
-    await showLoginDialog()
+    //await showLoginDialog()
   }
 
   // 顯示 SweetAlert2 的 loading 提示框

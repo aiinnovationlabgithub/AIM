@@ -1,5 +1,6 @@
 <template>
-  <div v-if="isLoggedIn">
+  <!--<div v-if="isLoggedIn">-->
+  <div>
     <div v-if="Array.isArray(excelDataA) && excelDataA.length">
     <!--<div v-if="excelData.length">-->
       <!-- 使用 v-for 渲染 10 個 canvas，並置中 -->

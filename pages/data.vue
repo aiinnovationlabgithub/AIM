@@ -1,6 +1,7 @@
 <template>
   <br>
-  <div v-if="isLoggedIn" class="container">
+  <!--<div v-if="isLoggedIn" class="container">-->
+  <div class="container">
     <div class="d-flex justify-content-between align-items-center">
       <h2>原始資料</h2>
       <button class="btn btn-primary" @click="downloadExcel">下載原始資料xlsx</button>

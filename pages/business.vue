@@ -1,7 +1,8 @@
 <!-- pages/chart.vue -->
 <template>
   <br>
-  <div v-if="isLoggedIn" class="container">
+  <!--<div v-if="isLoggedIn" class="container">-->
+  <div class="container">
     <div class="row">
       <!-- 前 6 等份：第一個下拉式選單（業務代號） -->
       <div class="col-6">
